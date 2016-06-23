@@ -103,7 +103,7 @@ class Model(Parameterized):
         self._needs_recompile = True
         self._session = tf.Session()
 
-    def _compile(self, optimizer=None):
+    def _compile(self, optimizer=None, verbose = False):
         """
         compile the tensorflow function "self._objective"
         """
@@ -128,7 +128,9 @@ class Model(Parameterized):
         self._session.run(init)
 
         # build tensorflow functions for computing the likelihood
-        print("compiling tensorflow function...")
+        if verbose:
+            print("compiling tensorflow function...")
+            
         sys.stdout.flush()
 
         def obj(x):
@@ -136,7 +138,8 @@ class Model(Parameterized):
                                      feed_dict={self._free_vars: x})
 
         self._objective = obj
-        print("done")
+        if verbose:
+            print("done")
         sys.stdout.flush()
         self._needs_recompile = False
 
