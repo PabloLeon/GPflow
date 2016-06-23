@@ -5,6 +5,8 @@ from .mean_functions import Zero
 from . import likelihoods
 from .tf_hacks import eye
 
+import jitter_cholesky
+
 
 class GPR(GPModel):
     def __init__(self, X, Y, kern, mean_function=Zero()):
@@ -29,7 +31,7 @@ class GPR(GPModel):
 
         """
         K = self.kern.K(self.X) + eye(self.num_data) * self.likelihood.variance
-        L = tf.cholesky(K)
+        L = jitter_cholesky(K)
         m = self.mean_function(self.X)
 
         return multivariate_normal(self.Y, m, L)
@@ -47,7 +49,7 @@ class GPR(GPModel):
         """
         Kx = self.kern.K(self.X, Xnew)
         K = self.kern.K(self.X) + eye(self.num_data) * self.likelihood.variance
-        L = tf.cholesky(K)
+        L = jitter_cholesky.jitchol(K)
         A = tf.matrix_triangular_solve(L, Kx, lower=True)
         V = tf.matrix_triangular_solve(L, self.Y - self.mean_function(self.X))
         fmean = tf.matmul(tf.transpose(A), V) + self.mean_function(Xnew)
