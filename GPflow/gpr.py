@@ -31,7 +31,7 @@ class GPR(GPModel):
 
         """
         K = self.kern.K(self.X) + eye(self.num_data) * self.likelihood.variance
-        L = jitter_cholesky(K)
+        L = jitter_cholesky.jitchol(K)
         m = self.mean_function(self.X)
 
         return multivariate_normal(self.Y, m, L)
